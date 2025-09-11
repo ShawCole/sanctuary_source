@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TopBar } from '@/components/TopBar';
 import { SearchDock } from '@/components/SearchDock';
 import { RetreatCarousel } from '@/components/RetreatCarousel';
@@ -8,6 +9,7 @@ import { mockPrograms } from '@/data/mockData';
 import heroImage from '@/assets/hero-tulum.jpg';
 
 export default function Overview() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('retreats');
 
   // Sample data organization
@@ -28,52 +30,50 @@ export default function Overview() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen bg-white">
       <TopBar />
       
       {/* Hero Section */}
-      <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[85vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src={heroImage} 
             alt="Sanctuary.Source Hero" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-black/40" />
+          <div className="absolute inset-0 bg-black/30" />
         </div>
         
-        <div className="relative z-10 text-center space-y-8 px-4">
-          <div className="space-y-4">
-            <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
-              Find Your Sacred
-              <span className="bg-gradient-to-r from-brand-light to-white bg-clip-text text-transparent">
-                {' '}Journey
-              </span>
+        <div className="relative z-10 text-center space-y-8 px-6 max-w-4xl mx-auto">
+          <div className="space-y-6">
+            <h1 className="text-5xl md:text-6xl font-medium text-white leading-tight">
+              Find Your Sacred Journey
             </h1>
-            <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto">
+            <p className="text-xl text-white/90 max-w-2xl mx-auto font-light">
               Discover transformative retreats that nourish your soul and expand your consciousness
             </p>
-          </div>
-          
-          <div className="w-full max-w-5xl mx-auto">
-            <SearchDock />
           </div>
         </div>
       </section>
 
+      {/* Search Section */}
+      <section className="relative -mt-20 px-6 pb-12 z-20">
+        <SearchDock />
+      </section>
+
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-12 max-w-7xl space-y-12">
+      <main className="container mx-auto px-6 py-16 max-w-7xl space-y-16">
         {/* Tabs */}
         <div className="flex justify-center">
-          <div className="flex bg-muted rounded-xl p-1">
+          <div className="flex bg-gray-100 rounded-2xl p-1">
             {tabs.map((tab) => (
               <Button
                 key={tab.id}
-                variant={activeTab === tab.id ? "default" : "ghost"}
-                className={`rounded-lg px-6 ${
+                variant="ghost"
+                className={`rounded-xl px-8 py-3 font-medium transition-all ${
                   activeTab === tab.id 
-                    ? 'bg-white shadow-sm text-brand' 
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-white shadow-sm text-gray-900' 
+                    : 'text-gray-600 hover:text-gray-900'
                 }`}
                 onClick={() => setActiveTab(tab.id)}
               >
@@ -116,10 +116,10 @@ export default function Overview() {
         )}
 
         {/* Popular Themes */}
-        <section className="space-y-6">
+        <section className="space-y-8">
           <div className="text-center space-y-4">
-            <h2 className="text-3xl font-bold text-gray-900">Explore by Theme</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <h2 className="text-3xl font-medium text-gray-900">Explore by Theme</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
               Whether you're seeking inner peace, physical wellness, or spiritual growth, 
               find the perfect retreat for your journey.
             </p>
@@ -127,27 +127,28 @@ export default function Overview() {
           
           <div className="flex flex-wrap justify-center gap-3">
             {popularThemes.map((theme) => (
-              <Badge 
+              <Button 
                 key={theme} 
                 variant="outline" 
-                className="px-4 py-2 text-sm cursor-pointer hover:bg-accent transition-colors"
+                className="rounded-full px-6 py-3 text-sm border-gray-200 hover:border-gray-900 hover:bg-gray-50 transition-colors"
               >
                 {theme}
-              </Badge>
+              </Button>
             ))}
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="text-center py-16 bg-gradient-to-r from-brand/5 to-brand-light/5 rounded-2xl">
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-gray-900">Ready to Begin?</h2>
-            <p className="text-muted-foreground max-w-lg mx-auto">
+        <section className="text-center py-20 bg-gray-50 rounded-3xl mx-6">
+          <div className="space-y-8 max-w-2xl mx-auto px-6">
+            <h2 className="text-4xl font-medium text-gray-900">Ready to Begin?</h2>
+            <p className="text-xl text-gray-600">
               Join thousands who have found transformation, healing, and growth through our curated retreats.
             </p>
             <Button 
               size="lg" 
-              className="bg-gradient-to-r from-brand to-brand-dark hover:from-brand-dark hover:to-brand text-white px-8 py-3"
+              className="bg-gray-900 hover:bg-gray-800 text-white px-12 py-4 rounded-2xl text-lg font-medium"
+              onClick={() => navigate('/retreats')}
             >
               Explore All Retreats
             </Button>

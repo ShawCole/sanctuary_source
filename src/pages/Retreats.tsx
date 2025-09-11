@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { TopBar } from '@/components/TopBar';
+import { SearchDock } from '@/components/SearchDock';
 import { RetreatCard } from '@/components/RetreatCard';
+import { MapView } from '@/components/MapView';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter, Grid, Map, X, SlidersHorizontal } from 'lucide-react';
+import { Search, Filter, Grid, Map, X, SlidersHorizontal, ChevronDown, Star } from 'lucide-react';
 import { mockPrograms } from '@/data/mockData';
 import { Program, SearchParams } from '@/types';
 
@@ -18,6 +20,7 @@ export default function Retreats() {
   const [filteredPrograms, setFilteredPrograms] = useState<Program[]>(mockPrograms);
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
   const [showFilters, setShowFilters] = useState(false);
+  const [searchAsMove, setSearchAsMove] = useState(false);
   
   // Filter state
   const [filters, setFilters] = useState<SearchParams>({
@@ -35,6 +38,14 @@ export default function Retreats() {
   const themes = ['Yoga', 'Meditation', 'Wellness', 'Detox', 'Mindfulness', 'Healing', 'Breathwork', 'Nature', 'Silent', 'Corporate'];
   const venueTypes = ['Beachfront', 'Mountain Lodge', 'Eco-Lodge', 'Urban', 'Desert Retreat', 'Villa', 'Ryokan', 'Country House', 'Campground', 'Coastal', 'Jungle'];
   const groupSizes = ['small', 'medium', 'large'];
+
+  // Filter tabs like Airbnb
+  const filterTabs = [
+    { key: 'type', label: 'Room Type', hasDropdown: true },
+    { key: 'price', label: 'Price range', hasDropdown: true },
+    { key: 'instant', label: 'Instant Book', hasDropdown: false },
+    { key: 'more', label: 'More filters', hasDropdown: true },
+  ];
 
   // Update filters from URL params
   useEffect(() => {
@@ -159,67 +170,55 @@ export default function Retreats() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <TopBar />
       
-      {/* Results Bar */}
-      <div className="sticky top-16 z-40 bg-white/95 backdrop-blur border-b">
-        <div className="container mx-auto px-4 py-4 max-w-7xl">
-          <div className="flex items-center justify-between gap-4">
-            {/* Search inputs */}
-            <div className="flex items-center gap-4 flex-1">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search retreats..."
-                  value={filters.keyword || ''}
-                  onChange={(e) => updateFilters({ keyword: e.target.value })}
-                  className="pl-10"
-                />
-              </div>
-              <Input
-                placeholder="Location"
-                value={filters.location || ''}
-                onChange={(e) => updateFilters({ location: e.target.value })}
-                className="max-w-40"
-              />
+      {/* Top search bar */}
+      <div className="border-b bg-white">
+        <div className="container mx-auto px-6 py-4 max-w-7xl">
+          <SearchDock compact className="max-w-md" />
+        </div>
+      </div>
+
+      {/* Filter tabs - Airbnb style */}
+      <div className="border-b bg-white sticky top-16 z-30">
+        <div className="container mx-auto px-6 py-4 max-w-7xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {filterTabs.map((tab) => (
+                <Button
+                  key={tab.key}
+                  variant="outline"
+                  className="rounded-full border-gray-300 text-gray-700 hover:border-gray-900 hover:bg-gray-50"
+                >
+                  {tab.label}
+                  {tab.hasDropdown && <ChevronDown className="ml-2 h-3 w-3" />}
+                </Button>
+              ))}
             </div>
-
-            {/* Controls */}
+            
             <div className="flex items-center gap-3">
-              <Select value={filters.sort} onValueChange={(value) => updateFilters({ sort: value as any })}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="relevance">Relevance</SelectItem>
-                  <SelectItem value="price_asc">Price: Low to High</SelectItem>
-                  <SelectItem value="price_desc">Price: High to Low</SelectItem>
-                  <SelectItem value="soonest">Soonest</SelectItem>
-                  <SelectItem value="rating">Highest Rated</SelectItem>
-                </SelectContent>
-              </Select>
-
+              {viewMode === 'map' && (
+                <Button
+                  variant={searchAsMove ? "default" : "outline"}
+                  onClick={() => setSearchAsMove(!searchAsMove)}
+                  className="rounded-full text-sm"
+                >
+                  Search as I move the map
+                </Button>
+              )}
+              
               <Button
                 variant="outline"
                 onClick={() => setViewMode(viewMode === 'grid' ? 'map' : 'grid')}
-                className="hidden md:flex"
+                className="rounded-full border-gray-900 text-gray-900"
               >
                 {viewMode === 'grid' ? <Map className="h-4 w-4 mr-2" /> : <Grid className="h-4 w-4 mr-2" />}
-                {viewMode === 'grid' ? 'Map View' : 'Grid View'}
+                {viewMode === 'grid' ? 'Show map' : 'Show list'}
               </Button>
-
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className="md:hidden"
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Filters {getActiveFiltersCount() > 0 && `(${getActiveFiltersCount()})`}
-              </Button>
-
-              <span className="text-sm text-muted-foreground">
-                {filteredPrograms.length} results
+              
+              <span className="text-sm text-gray-600">
+                {filteredPrograms.length}+ retreats
               </span>
             </div>
           </div>
@@ -228,7 +227,7 @@ export default function Retreats() {
           {(filters.themes?.length || filters.venueType || filters.groupSize) && (
             <div className="flex items-center gap-2 mt-4 flex-wrap">
               {filters.themes?.map((theme) => (
-                <Badge key={theme} variant="secondary" className="gap-1">
+                <Badge key={theme} variant="secondary" className="gap-1 rounded-full">
                   {theme}
                   <X 
                     className="h-3 w-3 cursor-pointer" 
@@ -239,7 +238,7 @@ export default function Retreats() {
                 </Badge>
               ))}
               {filters.venueType && (
-                <Badge variant="secondary" className="gap-1">
+                <Badge variant="secondary" className="gap-1 rounded-full">
                   {filters.venueType}
                   <X 
                     className="h-3 w-3 cursor-pointer" 
@@ -248,7 +247,7 @@ export default function Retreats() {
                 </Badge>
               )}
               {filters.groupSize && (
-                <Badge variant="secondary" className="gap-1">
+                <Badge variant="secondary" className="gap-1 rounded-full">
                   {filters.groupSize} group
                   <X 
                     className="h-3 w-3 cursor-pointer" 
@@ -256,7 +255,7 @@ export default function Retreats() {
                   />
                 </Badge>
               )}
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="rounded-full">
                 Clear all
               </Button>
             </div>
@@ -265,104 +264,10 @@ export default function Retreats() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
-        <div className="grid grid-cols-12 gap-6">
-          {/* Filter Sidebar - Desktop */}
-          <div className={`col-span-3 space-y-6 ${showFilters ? 'block' : 'hidden'} md:block`}>
-            <Card className="p-6 sticky top-32">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold flex items-center gap-2">
-                    <SlidersHorizontal className="h-4 w-4" />
-                    Filters
-                  </h3>
-                  {getActiveFiltersCount() > 0 && (
-                    <Button variant="ghost" size="sm" onClick={clearFilters}>
-                      Reset
-                    </Button>
-                  )}
-                </div>
-
-                {/* Themes */}
-                <div className="space-y-3">
-                  <h4 className="font-medium">Themes</h4>
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {themes.map((theme) => (
-                      <div key={theme} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={theme}
-                          checked={filters.themes?.includes(theme)}
-                          onCheckedChange={(checked) => {
-                            const newThemes = checked
-                              ? [...(filters.themes || []), theme]
-                              : filters.themes?.filter(t => t !== theme) || [];
-                            updateFilters({ themes: newThemes });
-                          }}
-                        />
-                        <label htmlFor={theme} className="text-sm cursor-pointer">
-                          {theme}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Venue Type */}
-                <div className="space-y-3">
-                  <h4 className="font-medium">Venue Type</h4>
-                  <Select value={filters.venueType} onValueChange={(value) => updateFilters({ venueType: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Any type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Any type</SelectItem>
-                      {venueTypes.map(type => (
-                        <SelectItem key={type} value={type}>{type}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Group Size */}
-                <div className="space-y-3">
-                  <h4 className="font-medium">Group Size</h4>
-                  <Select value={filters.groupSize} onValueChange={(value) => updateFilters({ groupSize: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Any size" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Any size</SelectItem>
-                      <SelectItem value="small">Small (4-8)</SelectItem>
-                      <SelectItem value="medium">Medium (8-16)</SelectItem>
-                      <SelectItem value="large">Large (16+)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Price Range */}
-                <div className="space-y-3">
-                  <h4 className="font-medium">Price Range</h4>
-                  <div className="space-y-4">
-                    <Slider
-                      value={[filters.priceMin || 0, filters.priceMax || 3000]}
-                      onValueChange={([min, max]) => updateFilters({ priceMin: min, priceMax: max })}
-                      min={0}
-                      max={3000}
-                      step={50}
-                      className="w-full"
-                    />
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>${filters.priceMin || 0}</span>
-                      <span>${filters.priceMax || 3000}+</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* Results Grid */}
-          <div className={`${showFilters ? 'col-span-12' : 'col-span-12'} md:col-span-9`}>
+      <div className="container mx-auto px-6 py-6 max-w-7xl">
+        {viewMode === 'grid' ? (
+          // Grid View
+          <div>
             {filteredPrograms.length === 0 ? (
               <Card className="p-12 text-center">
                 <div className="space-y-4">
@@ -375,14 +280,64 @@ export default function Retreats() {
                 </div>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredPrograms.map((program) => (
                   <RetreatCard key={program.id} program={program} />
                 ))}
               </div>
             )}
           </div>
-        </div>
+        ) : (
+          // Map View - Split Layout
+          <div className="grid grid-cols-5 gap-6 h-[calc(100vh-200px)]">
+            {/* Left: Results List */}
+            <div className="col-span-2 overflow-y-auto pr-4">
+              <div className="space-y-4">
+                {filteredPrograms.map((program) => (
+                  <Card key={program.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="flex gap-4">
+                      <img
+                        src={program.images[0]}
+                        alt={program.title}
+                        className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+                      />
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-medium text-sm">
+                            {program.location.city}, {program.location.country}
+                          </h3>
+                          <div className="flex items-center gap-1">
+                            <Star className="h-3 w-3 fill-gray-900 text-gray-900" />
+                            <span className="text-xs">{program.rating}</span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-600 line-clamp-2">
+                          {program.title}
+                        </p>
+                        <p className="text-xs font-medium">
+                          ${program.priceUSD.toLocaleString()} total
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Map */}
+            <div className="col-span-3">
+              <MapView 
+                programs={filteredPrograms}
+                searchAsMove={searchAsMove}
+                onSearchAsMoveToggle={() => setSearchAsMove(!searchAsMove)}
+                onMarkerClick={(program) => {
+                  // Handle marker click - could open program details
+                  console.log('Clicked program:', program.title);
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

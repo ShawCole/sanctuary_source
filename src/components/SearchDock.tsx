@@ -2,10 +2,16 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Calendar, MapPin, Users, Search } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Search, MapPin, Calendar, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export const SearchDock = () => {
+interface SearchDockProps {
+  compact?: boolean;
+  className?: string;
+}
+
+export const SearchDock = ({ compact = false, className = '' }: SearchDockProps) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useState({
     keyword: '',
@@ -24,71 +30,92 @@ export const SearchDock = () => {
     navigate(`/retreats?${params.toString()}`);
   };
 
-  return (
-    <Card className="w-full max-w-4xl mx-auto p-6 shadow-lg border-0 bg-white/95 backdrop-blur">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Keyword */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <Search className="h-4 w-4" />
-            What are you seeking?
-          </label>
-          <Input
-            placeholder="Yoga, meditation, healing..."
-            value={searchParams.keyword}
-            onChange={(e) => setSearchParams(prev => ({ ...prev, keyword: e.target.value }))}
-            className="border-0 bg-muted/50"
-          />
-        </div>
-
-        {/* Location */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            Where?
-          </label>
-          <Input
-            placeholder="Anywhere"
-            value={searchParams.location}
-            onChange={(e) => setSearchParams(prev => ({ ...prev, location: e.target.value }))}
-            className="border-0 bg-muted/50"
-          />
-        </div>
-
-        {/* Dates */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            When?
-          </label>
-          <Input
-            type="date"
-            value={searchParams.startDate}
-            onChange={(e) => setSearchParams(prev => ({ ...prev, startDate: e.target.value }))}
-            className="border-0 bg-muted/50"
-          />
-        </div>
-
-        {/* Guests */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Guests
-          </label>
-          <div className="flex items-center gap-2">
+  if (compact) {
+    return (
+      <Card className={`inline-flex items-center h-12 bg-white shadow-lg rounded-full border-0 ${className}`}>
+        <div className="flex items-center px-6 py-2">
+          <div className="flex items-center gap-4">
             <Input
-              type="number"
-              placeholder="1"
-              min="1"
+              placeholder="Search anywhere"
+              value={searchParams.keyword}
+              onChange={(e) => setSearchParams(prev => ({ ...prev, keyword: e.target.value }))}
+              className="border-0 bg-transparent p-0 text-sm font-medium w-32 focus-visible:ring-0"
+            />
+            <Separator orientation="vertical" className="h-6" />
+            <Input
+              type="date"
+              value={searchParams.startDate}
+              onChange={(e) => setSearchParams(prev => ({ ...prev, startDate: e.target.value }))}
+              className="border-0 bg-transparent p-0 text-sm w-24 focus-visible:ring-0"
+              placeholder="Anytime"
+            />
+            <Separator orientation="vertical" className="h-6" />
+            <Input
+              placeholder="1 guest"
               value={searchParams.guests}
               onChange={(e) => setSearchParams(prev => ({ ...prev, guests: e.target.value }))}
-              className="border-0 bg-muted/50 flex-1"
+              className="border-0 bg-transparent p-0 text-sm w-20 focus-visible:ring-0"
             />
+          </div>
+          <Button 
+            onClick={handleSearch}
+            size="icon"
+            className="ml-4 h-8 w-8 rounded-full bg-brand hover:bg-brand-dark"
+          >
+            <Search className="h-4 w-4 text-white" />
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className={`w-full max-w-4xl mx-auto shadow-xl border-0 bg-white rounded-3xl overflow-hidden ${className}`}>
+      <div className="p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-1">
+          {/* Where */}
+          <div className="flex flex-col p-6 hover:bg-gray-50 rounded-2xl transition-colors cursor-pointer">
+            <label className="text-xs font-semibold text-gray-900 mb-1">Where</label>
+            <Input
+              placeholder="Search destinations"
+              value={searchParams.keyword}
+              onChange={(e) => setSearchParams(prev => ({ ...prev, keyword: e.target.value }))}
+              className="border-0 bg-transparent p-0 text-sm text-gray-600 placeholder:text-gray-400 focus-visible:ring-0"
+            />
+          </div>
+
+          <Separator orientation="vertical" className="hidden lg:block h-12 self-center" />
+
+          {/* When */}
+          <div className="flex flex-col p-6 hover:bg-gray-50 rounded-2xl transition-colors cursor-pointer">
+            <label className="text-xs font-semibold text-gray-900 mb-1">When</label>
+            <Input
+              type="date"
+              value={searchParams.startDate}
+              onChange={(e) => setSearchParams(prev => ({ ...prev, startDate: e.target.value }))}
+              className="border-0 bg-transparent p-0 text-sm text-gray-600 focus-visible:ring-0"
+              placeholder="Add dates"
+            />
+          </div>
+
+          <Separator orientation="vertical" className="hidden lg:block h-12 self-center" />
+
+          {/* Who */}
+          <div className="flex items-center justify-between p-6 hover:bg-gray-50 rounded-2xl transition-colors cursor-pointer">
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-gray-900 mb-1">Who</label>
+              <Input
+                placeholder="Add guests"
+                value={searchParams.guests}
+                onChange={(e) => setSearchParams(prev => ({ ...prev, guests: e.target.value }))}
+                className="border-0 bg-transparent p-0 text-sm text-gray-600 placeholder:text-gray-400 focus-visible:ring-0"
+              />
+            </div>
             <Button 
               onClick={handleSearch}
-              className="bg-gradient-to-r from-brand to-brand-dark hover:from-brand-dark hover:to-brand text-white px-8"
+              className="ml-4 h-12 w-12 rounded-full bg-brand hover:bg-brand-dark text-white shadow-md"
             >
-              Search
+              <Search className="h-5 w-5" />
             </Button>
           </div>
         </div>
