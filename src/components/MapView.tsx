@@ -178,21 +178,6 @@ export const MapView = ({
           __html: `
             .custom-price-marker { background: transparent !important; border: none !important; }
             .leaflet-container { outline: none; }
-            .leaflet-tile-container { 
-              filter: none !important; 
-              transform: translate3d(0,0,0) !important;
-            }
-            .leaflet-tile { 
-              border: none !important; 
-              outline: none !important;
-              image-rendering: -webkit-optimize-contrast;
-              image-rendering: crisp-edges;
-              backface-visibility: hidden;
-              transform: translate3d(0,0,0);
-            }
-            .leaflet-layer { 
-              transform: translate3d(0,0,0) !important;
-            }
           `,
         }}
       />
