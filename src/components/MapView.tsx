@@ -86,6 +86,13 @@ export const MapView = ({
       zoom: 6,
       zoomControl: true,
       attributionControl: true,
+      zoomAnimation: true,
+      zoomAnimationThreshold: 4,
+      fadeAnimation: true,
+      markerZoomAnimation: true,
+      wheelPxPerZoomLevel: 60,
+      zoomSnap: 0.25,
+      zoomDelta: 0.25,
     });
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
