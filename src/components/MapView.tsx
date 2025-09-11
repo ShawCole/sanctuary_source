@@ -1,10 +1,10 @@
 import { useState, useCallback, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { Program } from '@/types';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import { Star, Heart } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 
@@ -63,73 +63,12 @@ const PriceMarker = ({ program, isSelected, onSelect }: {
         click: onSelect,
       }}
     >
-      <Popup>
-        <Card className="w-64 border-0 shadow-lg">
-          <div className="space-y-3">
-            <div className="relative">
-              <img
-                src={program.images[0]}
-                alt={program.title}
-                className="w-full h-32 object-cover rounded-t-lg"
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 h-6 w-6 rounded-full bg-white/90 hover:bg-white"
-              >
-                <Heart className="h-3 w-3" />
-              </Button>
-            </div>
-            
-            <div className="px-3 pb-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium text-sm text-gray-900 line-clamp-1">
-                  {program.location.city}, {program.location.country}
-                </h4>
-                <div className="flex items-center gap-1">
-                  <Star className="h-3 w-3 fill-gray-900 text-gray-900" />
-                  <span className="text-xs text-gray-900">{program.rating}</span>
-                </div>
-              </div>
-              
-              <p className="text-xs text-gray-600 line-clamp-1">
-                with {program.guide.name}
-              </p>
-              
-              <p className="text-xs text-gray-600 line-clamp-2">
-                {program.title}
-              </p>
-              
-              <div className="flex items-center justify-between pt-2">
-                <p className="text-sm font-semibold text-gray-900">
-                  ${program.priceUSD.toLocaleString()} total
-                </p>
-                <Button 
-                  size="sm" 
-                  className="bg-gray-900 hover:bg-gray-800 text-white px-3 py-1 text-xs"
-                >
-                  View
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </Popup>
+      {/* Removed Popup to isolate context error */}
+      
     </Marker>
   );
 };
 
-// Map event handler component
-const MapEvents = ({ onMoveEnd, searchAsMove }: { onMoveEnd: () => void; searchAsMove: boolean }) => {
-  useMapEvents({
-    moveend: () => {
-      if (searchAsMove) {
-        onMoveEnd();
-      }
-    },
-  });
-  return null;
-};
 
 export const MapView = ({ programs, onMarkerClick, searchAsMove = false, onSearchAsMoveToggle }: MapViewProps) => {
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
@@ -160,11 +99,6 @@ export const MapView = ({ programs, onMarkerClick, searchAsMove = false, onSearc
     onMarkerClick?.(program);
   }, [onMarkerClick]);
 
-  const handleMoveEnd = useCallback(() => {
-    if (searchAsMove) {
-      console.log('Search with new bounds - implement your search logic here');
-    }
-  }, [searchAsMove]);
 
   return (
     <div className="relative h-full min-h-[600px] rounded-xl overflow-hidden">
@@ -180,7 +114,7 @@ export const MapView = ({ programs, onMarkerClick, searchAsMove = false, onSearc
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         
-        <MapEvents onMoveEnd={handleMoveEnd} searchAsMove={searchAsMove} />
+        
         
         {programs.map((program) => (
           <PriceMarker
