@@ -99,6 +99,12 @@ export const MapView = ({
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 19,
+      updateWhenZooming: true,
+      updateWhenIdle: true,
+      keepBuffer: 4,
+      detectRetina: true,
+      crossOrigin: true,
+      className: "leaflet-tiles-no-seams",
     }).addTo(map);
 
     // Optional: search as move
@@ -176,8 +182,31 @@ export const MapView = ({
       <style
         dangerouslySetInnerHTML={{
           __html: `
+            /* Price markers container styling */
             .custom-price-marker { background: transparent !important; border: none !important; }
+
+            /* Remove visible seams and ensure smooth, interactive map */
             .leaflet-container { outline: none; }
+            .leaflet-container .leaflet-tile {
+              border: 0 !important;
+              box-shadow: none !important;
+              image-rendering: auto;
+              -ms-interpolation-mode: nearest-neighbor;
+              backface-visibility: hidden;
+              -webkit-backface-visibility: hidden;
+            }
+            .leaflet-container .leaflet-zoom-animated { transform: translate3d(0,0,0); }
+            .leaflet-container .leaflet-pane,
+            .leaflet-container .leaflet-map-pane,
+            .leaflet-container .leaflet-tile-pane,
+            .leaflet-container .leaflet-layer,
+            .leaflet-container .leaflet-tile-container {
+              will-change: transform;
+              -webkit-transform: translateZ(0);
+                      transform: translateZ(0);
+              backface-visibility: hidden;
+              -webkit-backface-visibility: hidden;
+            }
           `,
         }}
       />
