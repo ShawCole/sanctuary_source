@@ -56,15 +56,16 @@ export const MapView = ({
     return L.divIcon({
       html: `
         <div style="
-          background:${bg};color:white;padding:4px 12px;border-radius:20px;
+          background:${bg};color:white;padding:6px 12px;border-radius:20px;
           font-weight:600;font-size:14px;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.15);
-          transform:${selected ? "scale(1.1)" : "scale(1)"};transition:all .2s ease;white-space:nowrap;text-align:center;">
+          transform:${selected ? "scale(1.1)" : "scale(1)"};transition:all .2s ease;
+          white-space:nowrap;text-align:center;display:inline-block;
+          position:relative;left:-50%;top:-50%;">
           $${price.toLocaleString()}
         </div>
       `,
       className: "custom-price-marker",
-      iconSize: [60, 30],
-      iconAnchor: [30, 15],
+      iconAnchor: [0, 0],
     });
   }, []);
 
