@@ -159,22 +159,23 @@ export const MapView = ({
   }, [programs, bounds, selectedProgram, createPriceIcon, handleMarkerClick]);
 
   return (
-    <div className="relative h-full min-h-[600px] rounded-xl overflow-hidden">
+    <div className="relative h-full min-h-[400px] md:min-h-[600px] rounded-xl overflow-hidden">
       <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
 
       {/* Search as I move toggle */}
       {onSearchAsMoveToggle && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000]">
+        <div className="absolute top-2 md:top-4 left-1/2 -translate-x-1/2 z-[1000] px-2">
           <Button
             variant={searchAsMove ? "default" : "secondary"}
             onClick={onSearchAsMoveToggle}
             className={
               searchAsMove
-                ? "rounded-full text-sm font-medium shadow-lg"
-                : "rounded-full text-sm font-medium shadow-lg"
+                ? "rounded-full text-xs md:text-sm font-medium shadow-lg px-3 py-2 md:px-4"
+                : "rounded-full text-xs md:text-sm font-medium shadow-lg px-3 py-2 md:px-4"
             }
           >
-            Search as I move the map
+            <span className="hidden sm:inline">Search as I move the map</span>
+            <span className="sm:hidden">Search as I move</span>
           </Button>
         </div>
       )}
