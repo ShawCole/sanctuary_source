@@ -178,8 +178,10 @@ export default function Retreats() {
       
       {/* Top search bar */}
       <div className="border-b bg-white">
-        <div className="container mx-auto px-6 py-4 max-w-7xl">
-          <SearchDock compact className="max-w-md" />
+        <div className="container mx-auto px-4 py-4 max-w-7xl">
+          <div className="flex justify-center">
+            <SearchDock compact className="w-full max-w-md md:max-w-md" />
+          </div>
         </div>
       </div>
 

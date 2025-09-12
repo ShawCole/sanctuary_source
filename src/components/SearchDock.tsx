@@ -32,29 +32,29 @@ export const SearchDock = ({ compact = false, className = '' }: SearchDockProps)
 
   if (compact) {
     return (
-      <Card className={`inline-flex items-center h-12 bg-white shadow-lg rounded-full border-0 ${className}`}>
-        <div className="flex items-center px-6 py-2">
-          <div className="flex items-center gap-4">
+      <Card className={`flex items-center h-12 bg-white shadow-lg rounded-full border-0 w-full ${className}`}>
+        <div className="flex items-center px-4 md:px-6 py-2 w-full">
+          <div className="flex items-center gap-2 md:gap-4 flex-1">
             <Input
               placeholder="Search anywhere"
               value={searchParams.keyword}
               onChange={(e) => setSearchParams(prev => ({ ...prev, keyword: e.target.value }))}
-              className="border-0 bg-transparent p-0 text-sm font-medium w-32 focus-visible:ring-0"
+              className="border-0 bg-transparent p-0 text-sm font-medium flex-1 min-w-0 focus-visible:ring-0"
             />
-            <Separator orientation="vertical" className="h-6" />
+            <Separator orientation="vertical" className="h-6 hidden sm:block" />
             <Input
               type="date"
               value={searchParams.startDate}
               onChange={(e) => setSearchParams(prev => ({ ...prev, startDate: e.target.value }))}
-              className="border-0 bg-transparent p-0 text-sm w-24 focus-visible:ring-0"
+              className="border-0 bg-transparent p-0 text-sm w-20 md:w-24 focus-visible:ring-0 hidden sm:block"
               placeholder="Anytime"
             />
-            <Separator orientation="vertical" className="h-6" />
+            <Separator orientation="vertical" className="h-6 hidden sm:block" />
             <Input
               placeholder="1 guest"
               value={searchParams.guests}
               onChange={(e) => setSearchParams(prev => ({ ...prev, guests: e.target.value }))}
-              className="border-0 bg-transparent p-0 text-sm w-20 focus-visible:ring-0"
+              className="border-0 bg-transparent p-0 text-sm w-16 md:w-20 focus-visible:ring-0 hidden sm:block"
             />
           </div>
           <Button 
