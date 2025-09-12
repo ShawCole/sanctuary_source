@@ -10,10 +10,12 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
 import { Card } from '@/components/ui/card';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter, Grid, Map, X, SlidersHorizontal, ChevronDown, Star } from 'lucide-react';
 import { mockPrograms } from '@/data/mockData';
 import { Program, SearchParams } from '@/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function Retreats() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,6 +23,7 @@ export default function Retreats() {
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [searchAsMove, setSearchAsMove] = useState(false);
+  const isMobile = useIsMobile();
   
   // Filter state
   const [filters, setFilters] = useState<SearchParams>({
@@ -184,43 +187,65 @@ export default function Retreats() {
       <div className="border-b bg-white sticky top-16 z-30">
         <div className="container mx-auto px-6 py-4 max-w-7xl">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {filterTabs.map((tab) => (
-                <Button
-                  key={tab.key}
-                  variant="outline"
-                  className="rounded-full border-gray-300 text-gray-700 hover:border-gray-900 hover:bg-gray-50"
-                >
-                  {tab.label}
-                  {tab.hasDropdown && <ChevronDown className="ml-2 h-3 w-3" />}
-                </Button>
-              ))}
-            </div>
-            
-            <div className="flex items-center gap-3">
-              {viewMode === 'map' && (
-                <Button
-                  variant={searchAsMove ? "default" : "outline"}
-                  onClick={() => setSearchAsMove(!searchAsMove)}
-                  className="rounded-full text-sm"
-                >
-                  Search as I move the map
-                </Button>
-              )}
-              
-              <Button
-                variant="outline"
-                onClick={() => setViewMode(viewMode === 'grid' ? 'map' : 'grid')}
-                className="rounded-full border-gray-900 text-gray-900"
-              >
-                {viewMode === 'grid' ? <Map className="h-4 w-4 mr-2" /> : <Grid className="h-4 w-4 mr-2" />}
-                {viewMode === 'grid' ? 'Show map' : 'Show list'}
-              </Button>
-              
-              <span className="text-sm text-gray-600">
-                {filteredPrograms.length}+ retreats
-              </span>
-            </div>
+            {/* Mobile: Horizontal scrollable filters */}
+            {isMobile ? (
+              <ScrollArea className="w-full">
+                <div className="flex items-center gap-3 pb-2">
+                  {filterTabs.map((tab) => (
+                    <Button
+                      key={tab.key}
+                      variant="outline"
+                      className="rounded-full border-gray-300 text-gray-700 hover:border-gray-900 hover:bg-gray-50 whitespace-nowrap flex-shrink-0"
+                    >
+                      {tab.label}
+                      {tab.hasDropdown && <ChevronDown className="ml-2 h-3 w-3" />}
+                    </Button>
+                  ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            ) : (
+              /* Desktop: Normal layout */
+              <>
+                <div className="flex items-center gap-4">
+                  {filterTabs.map((tab) => (
+                    <Button
+                      key={tab.key}
+                      variant="outline"
+                      className="rounded-full border-gray-300 text-gray-700 hover:border-gray-900 hover:bg-gray-50"
+                    >
+                      {tab.label}
+                      {tab.hasDropdown && <ChevronDown className="ml-2 h-3 w-3" />}
+                    </Button>
+                  ))}
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  {viewMode === 'map' && (
+                    <Button
+                      variant={searchAsMove ? "default" : "outline"}
+                      onClick={() => setSearchAsMove(!searchAsMove)}
+                      className="rounded-full text-sm"
+                    >
+                      Search as I move the map
+                    </Button>
+                  )}
+                  
+                  <Button
+                    variant="outline"
+                    onClick={() => setViewMode(viewMode === 'grid' ? 'map' : 'grid')}
+                    className="rounded-full border-gray-900 text-gray-900"
+                  >
+                    {viewMode === 'grid' ? <Map className="h-4 w-4 mr-2" /> : <Grid className="h-4 w-4 mr-2" />}
+                    {viewMode === 'grid' ? 'Show map' : 'Show list'}
+                  </Button>
+                  
+                  <span className="text-sm text-gray-600">
+                    {filteredPrograms.length}+ retreats
+                  </span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Active Filters */}
@@ -267,7 +292,7 @@ export default function Retreats() {
       <div className="container mx-auto px-6 py-6 max-w-7xl">
         {viewMode === 'grid' ? (
           // Grid View
-          <div>
+          <div className="relative">
             {filteredPrograms.length === 0 ? (
               <Card className="p-12 text-center">
                 <div className="space-y-4">
@@ -286,46 +311,61 @@ export default function Retreats() {
                 ))}
               </div>
             )}
+            
+            {/* Mobile floating "Show Map" button */}
+            {isMobile && (
+              <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
+                <Button
+                  onClick={() => setViewMode('map')}
+                  className="rounded-full bg-foreground text-background hover:bg-foreground/90 shadow-xl px-6 py-3 text-sm font-medium"
+                >
+                  <Map className="h-4 w-4 mr-2" />
+                  Show map
+                </Button>
+              </div>
+            )}
           </div>
         ) : (
-          // Map View - Split Layout
-          <div className="grid grid-cols-5 gap-6 h-[calc(100vh-200px)]">
-            {/* Left: Results List */}
-            <div className="col-span-2 overflow-y-auto pr-4">
-              <div className="space-y-4">
-                {filteredPrograms.map((program) => (
-                  <Card key={program.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-                    <div className="flex gap-4">
-                      <img
-                        src={program.images[0]}
-                        alt={program.title}
-                        className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
-                      />
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-medium text-sm">
-                            {program.location.city}, {program.location.country}
-                          </h3>
-                          <div className="flex items-center gap-1">
-                            <Star className="h-3 w-3 fill-gray-900 text-gray-900" />
-                            <span className="text-xs">{program.rating}</span>
+          // Map View - Split Layout (Desktop) or Full Screen (Mobile)
+          <div className={isMobile ? "h-[calc(100vh-200px)]" : "grid grid-cols-5 gap-6 h-[calc(100vh-200px)]"}>
+            {/* Left: Results List (Desktop only) */}
+            {!isMobile && (
+              <div className="col-span-2 overflow-y-auto pr-4">
+                <div className="space-y-4">
+                  {filteredPrograms.map((program) => (
+                    <Card key={program.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+                      <div className="flex gap-4">
+                        <img
+                          src={program.images[0]}
+                          alt={program.title}
+                          className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+                        />
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-medium text-sm">
+                              {program.location.city}, {program.location.country}
+                            </h3>
+                            <div className="flex items-center gap-1">
+                              <Star className="h-3 w-3 fill-gray-900 text-gray-900" />
+                              <span className="text-xs">{program.rating}</span>
+                            </div>
                           </div>
+                          <p className="text-xs text-gray-600 line-clamp-2">
+                            {program.title}
+                          </p>
+                          <p className="text-xs font-medium">
+                            ${program.priceUSD.toLocaleString()} total
+                          </p>
                         </div>
-                        <p className="text-xs text-gray-600 line-clamp-2">
-                          {program.title}
-                        </p>
-                        <p className="text-xs font-medium">
-                          ${program.priceUSD.toLocaleString()} total
-                        </p>
                       </div>
-                    </div>
-                  </Card>
-                ))}
+                    </Card>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Right: Map */}
-            <div className="col-span-3">
+            {/* Map */}
+            <div className={isMobile ? "h-full relative" : "col-span-3"}>
               <MapView 
                 programs={filteredPrograms}
                 searchAsMove={searchAsMove}
@@ -335,6 +375,19 @@ export default function Retreats() {
                   console.log('Clicked program:', program.title);
                 }}
               />
+              
+              {/* Mobile floating "Show List" button */}
+              {isMobile && (
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40">
+                  <Button
+                    onClick={() => setViewMode('grid')}
+                    className="rounded-full bg-background text-foreground hover:bg-background/90 shadow-xl px-6 py-3 text-sm font-medium border"
+                  >
+                    <Grid className="h-4 w-4 mr-2" />
+                    Show list
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}
