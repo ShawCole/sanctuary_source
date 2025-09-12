@@ -9,9 +9,10 @@ import { useState } from 'react';
 interface RetreatCardProps {
   program: Program;
   variant?: 'overview' | 'explore';
+  onThemeClick?: (theme: string) => void;
 }
 
-export const RetreatCard = ({ program, variant = 'explore' }: RetreatCardProps) => {
+export const RetreatCard = ({ program, variant = 'explore', onThemeClick }: RetreatCardProps) => {
   const [isSaved, setIsSaved] = useState(false);
 
   const formatDate = (dateString: string) => {
@@ -97,10 +98,18 @@ export const RetreatCard = ({ program, variant = 'explore' }: RetreatCardProps) 
           <span className="text-sm text-gray-600"> total</span>
         </div>
 
-        {/* Themes - only show on hover or in detailed view */}
-        <div className="flex flex-wrap gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        {/* Themes - always visible */}
+        <div className="flex flex-wrap gap-1 mt-1">
           {program.themes.slice(0, 2).map((theme) => (
-            <Badge key={theme} variant="secondary" className="text-xs px-2 py-0">
+            <Badge 
+              key={theme} 
+              variant="secondary" 
+              className="text-xs px-2 py-0 cursor-pointer hover:bg-secondary/80 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                onThemeClick?.(theme);
+              }}
+            >
               {theme}
             </Badge>
           ))}

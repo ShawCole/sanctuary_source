@@ -309,7 +309,16 @@ export default function Retreats() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredPrograms.map((program) => (
-                  <RetreatCard key={program.id} program={program} />
+                  <RetreatCard 
+                    key={program.id} 
+                    program={program} 
+                    onThemeClick={(theme) => {
+                      const currentThemes = filters.themes || [];
+                      if (!currentThemes.includes(theme)) {
+                        updateFilters({ themes: [...currentThemes, theme] });
+                      }
+                    }}
+                  />
                 ))}
               </div>
             )}
